@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="0ccdab38-a435-4a3a-9722-a6711a1309e4" />
+    <option name="openSessionIds">
+      <list>
+        <option value="0ccdab38-a435-4a3a-9722-a6711a1309e4" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="0ccdab38-a435-4a3a-9722-a6711a1309e4" value="/sessions/00889ef8-3ad6-40eb-8518-ed983fbdd3f9" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="0ccdab38-a435-4a3a-9722-a6711a1309e4" value="package api; import io.restassured.response.Respon" />
+      </map>
+    </option>
+  </component>
+</project>
