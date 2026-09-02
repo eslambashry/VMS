@@ -16,7 +16,7 @@ public class VisitMngtApiClient {
                 .baseUri(TestConfig.API_BASE_URL)
                 .header("Authorization", "Bearer " + accessToken)
         .when()
-                .get("api/v1/Visit-mngt/working-hours")
+                .get(EndPoint.WORKING_HOURS)
         .then()
                 .extract().response();
         return response.body().asString();
@@ -26,9 +26,9 @@ public class VisitMngtApiClient {
         Response response = given()
                 .baseUri(TestConfig.API_BASE_URL)
                 .header("Authorization", "Bearer " + accessToken)
-                .when()
+        .when()
                 .get(EndPoint.VISIT_ZONE)
-                .then()
+        .then()
                 .extract().response();
 
         return response.body().asString();
@@ -40,6 +40,33 @@ public class VisitMngtApiClient {
                 .header("Authorization", "Bearer " + accessToken)
         .when()
                 .get(EndPoint.VISIT_ZONE)
+        .then()
+                .extract().response();
+
+        return response.body().asString();
+    }
+
+    public static String getVisitors(String accessToken){
+        Response response = given()
+                .baseUri(TestConfig.API_BASE_URL)
+                .header("Authorization", "Bearer " + accessToken)
+                .queryParam("size", 10)
+        .when()
+                .get(EndPoint.VISITORS)
+        .then()
+                .extract().response();
+
+        return response.body().asString();
+    }
+
+    public static String getVisitRequests(String accessToken){
+        Response response = given()
+                .baseUri(TestConfig.API_BASE_URL)
+                .header("Authorization", "Bearer " + accessToken)
+                .queryParam("page", 0)
+                .queryParam("size", 10)
+        .when()
+                .get(EndPoint.VISIT_REQUESTS)
         .then()
                 .extract().response();
 

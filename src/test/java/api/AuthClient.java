@@ -1,5 +1,6 @@
 package api;
 
+import config.EndPoint;
 import config.TestConfig;
 import io.restassured.response.Response;
 import objects.User;
@@ -19,7 +20,7 @@ public class AuthClient {
                 .contentType("application/json")
                 .body(user)
         .when()
-                .post("api/v1/idm/auth/login")
+                .post(EndPoint.LOGIN)
         .then()
                 .extract().response();
 

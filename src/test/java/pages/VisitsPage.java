@@ -5,6 +5,7 @@ import base.BasePage;
 import components.TimePickerComponent;
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -54,11 +55,25 @@ public class VisitsPage extends BasePage {
     @FindBy(name = "notesToHsse")
     private WebElement notesToHsseTextarea;
 
+
+
+    // Visitors Info step: clicking the "englishFirstName" field's search-icon-button (with no
+    // typing needed) queries the visitors API and renders matches as "dropdown-option" rows;
+    // selecting one auto-fills the rest of the visitor's fields (Arabic name, phone, email,
+    // company, ID, photos).
+    private static final By VISITOR_FIRST_NAME_SEARCH_BUTTON = By.xpath(
+            "//custom-input-search-form[@controlname='englishFirstName']//button[contains(@class,'search-icon-button')]");
+
     @FindBy(xpath = "//button[contains(@class,'stroke-red') and normalize-space(text())='Cancel']")
     private WebElement cancelButton;
 
-    @FindBy(xpath = "//button[contains(@class,'ng-star-inserted') and normalize-space(text())='Next']")
+    // "Next" is rendered inside a nested element (e.g. a div/p), not as the button's own direct
+    // text node, so matching on the button's text() directly never finds it - match any descendant instead.
+    @FindBy(xpath = "//button[.//*[normalize-space(text())='Next']]")
     private WebElement nextButton;
+
+    @FindBy(xpath = "//button[.//*[normalize-space(text())='Submit']]")
+    private WebElement submitButton;
 
     private TimePickerComponent startTimePicker(){
         return new TimePickerComponent(driver, wait, startTimeInput);
@@ -80,7 +95,7 @@ public class VisitsPage extends BasePage {
     // workingHours is fetched directly from the API beforehand (see api.VisitMngtApiClient).
     public LocalDate selectVisitDay(List<WorkingHoursParser.WorkingHours> workingHours){
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("global-loader-container")));
-        calendarInput.click();
+        clickCalendarInput();
         LocalDate visitDay = WorkingHoursParser.nextWorkingDay(workingHours, LocalDate.now().plusDays(1));
 
         navigateToMonth(YearMonth.from(visitDay));
@@ -92,6 +107,24 @@ public class VisitsPage extends BasePage {
                 + visitDay.getDayOfMonth() + "']";
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(dayXpath))).click();
         return visitDay;
+    }
+
+    // Even once clickable, the calendar's own data-loading spinner can flash over it right at click
+    // time, intercepting the click - retry through that rather than failing on the race.
+    private void clickCalendarInput() {
+        int attempts = 0;
+        while (true) {
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(calendarInput)).click();
+                return;
+            } catch (ElementClickInterceptedException e) {
+                attempts++;
+                if (attempts >= 3) {
+                    throw e;
+                }
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("global-loader-container")));
+            }
+        }
     }
 
     // The calendar only ever renders one month at a time, defaulting to the current one - so if the
@@ -146,11 +179,31 @@ public class VisitsPage extends BasePage {
         notesToHsseTextarea.sendKeys(notes);
     }
 
-    public void clickNext(){
-        nextButton.click();
+
+    // Same click-intercepted race as the calendar input - the loader can flash over the button
+    // right at click time even after it's reported clickable.
+    public void clickNextButton() {
+                wait.until(ExpectedConditions.elementToBeClickable(nextButton)).click();
+    }
+
+    public void clickSubmitButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
     }
 
     public void clickCancel(){
         cancelButton.click();
+    }
+
+    // Clicking the search-icon-button with the field left empty is enough to load its default
+    // (unfiltered) results - no typing needed. nameEn should come from VisitorParser.
+    // firstCompleteVisitorNameEn, so it's guaranteed to match a visitor with full data rather than
+    // whichever entry happens to be listed first.
+    public void searchAndSelectVisitor(String nameEn){
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("global-loader-container")));
+        wait.until(ExpectedConditions.elementToBeClickable(VISITOR_FIRST_NAME_SEARCH_BUTTON)).click();
+
+        By option = By.xpath("//div[@tabindex='0'][contains(concat(' ',normalize-space(@class),' '),' dropdown-option ')]"
+                + "[.//p[contains(@class,'visitor-name') and normalize-space(text())='" + nameEn + "']]");
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
     }
 }

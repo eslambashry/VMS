@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.VisitRequestsPage;
 
-public class ApproveRegularVisitRequest extends BaseTest {
+public class ApproveRegularVisitRequestTest extends BaseTest {
 
     @Story("Approve Regular Request")
     @Test(description = "Approve Regular Visit")

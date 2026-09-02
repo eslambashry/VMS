@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="0ccdab38-a435-4a3a-9722-a6711a1309e4" />
+    <option name="activeSessionId" value="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" />
     <option name="openSessionIds">
       <list>
-        <option value="0ccdab38-a435-4a3a-9722-a6711a1309e4" />
+        <option value="288ace1c-69c7-4428-88f6-fd9ee61b3818" />
+        <option value="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="0ccdab38-a435-4a3a-9722-a6711a1309e4" value="/sessions/00889ef8-3ad6-40eb-8518-ed983fbdd3f9" />
+        <entry key="288ace1c-69c7-4428-88f6-fd9ee61b3818" value="/sessions/b5198cfc-1b61-4491-9fde-b69a5d2eb27e" />
+        <entry key="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" value="/sessions/b5198cfc-1b61-4491-9fde-b69a5d2eb27e" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="0ccdab38-a435-4a3a-9722-a6711a1309e4" value="package api; import io.restassured.response.Respon" />
+        <entry key="288ace1c-69c7-4428-88f6-fd9ee61b3818" value="i want to link that page with our CreateRegularVis" />
+        <entry key="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" value="i want to link that page with our CreateRegularVis" />
       </map>
     </option>
   </component>

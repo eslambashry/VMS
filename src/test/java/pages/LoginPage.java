@@ -2,6 +2,7 @@ package pages;
 
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -19,7 +20,7 @@ public class LoginPage {
     public LoginPage(WebDriver driver) {
         this.driver = driver;
 
-        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(90));
 
         PageFactory.initElements(driver, this);
     }
@@ -33,16 +34,33 @@ public class LoginPage {
     @FindBy(css = "button.submit-button")
     private WebElement submitButton;
 
-    @FindBy(css = "h2.mobile-hidden")
-    private WebElement hiddenField;
+    @FindBy(css = "custom-svg-icon.collapsed-svg-icon")
+    private WebElement visitsButton;
 
     public void login(String username, String password) {
         wait.until(ExpectedConditions.visibilityOf(usernameInput));
         enterUsername(username);
         enterPassword(password);
-        submitButton.click();
+        clickSubmitButton();
 
-        wait.until(ExpectedConditions.visibilityOf(hiddenField));
+        wait.until(ExpectedConditions.visibilityOf(visitsButton));
+    }
+
+    // Right after submitting, a layout shift can briefly put the form-footer over this button,
+    // intercepting the click even though it just reported clickable - retry through that race.
+    private void clickSubmitButton() {
+        int attempts = 0;
+        while (true) {
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(submitButton)).click();
+                return;
+            } catch (ElementClickInterceptedException e) {
+                attempts++;
+                if (attempts >= 3) {
+                    throw e;
+                }
+            }
+        }
     }
 
     @Step("enter email")

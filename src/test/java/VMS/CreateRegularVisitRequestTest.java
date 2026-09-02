@@ -3,6 +3,7 @@ package VMS;
 import api.AuthClient;
 import api.LookupParser;
 import api.VisitMngtApiClient;
+import api.VisitorParser;
 import api.WorkingHoursParser;
 import base.BaseTest;
 import config.TestConfig;
@@ -33,6 +34,7 @@ public class CreateRegularVisitRequestTest extends BaseTest {
         String workingHoursJson = VisitMngtApiClient.getWorkingHours(accessToken);
         List<WorkingHoursParser.WorkingHours> workingHoursList = WorkingHoursParser.parse(workingHoursJson);
         String visitZone = LookupParser.firstActiveNameEn(VisitMngtApiClient.getVisitZones(accessToken));
+        String visitorNameEn = VisitorParser.firstCompleteVisitorNameEn(VisitMngtApiClient.getVisitors(accessToken));
 
         setDriver(DriverFactory.generateDriver(TestConfig.BROWSER));
         getDriver().get(TestConfig.AUTH_URL);
@@ -54,20 +56,20 @@ public class CreateRegularVisitRequestTest extends BaseTest {
         if (endTime.isAfter(workingHours.endTime())) {
             endTime = workingHours.endTime();
         }
-        System.out.println("[computed times] visitDay=" + visitDay + " startTime=" + startTime + " endTime=" + endTime);
-
-
 
         visitsPage.selectStartTime(startTime.format(TIME_FORMAT));
         visitsPage.selectEndTime(endTime.format(TIME_FORMAT));
-
         visitsPage.selectVisitType("Maintenance");
         String Purpose = new UserUtils().generateRandomPurpose();
         visitsPage.enterPurposeOfVisit(Purpose);
         visitsPage.selectVisitZone(visitZone);
 
+        visitsPage.clickNextButton();
 
+        visitsPage.searchAndSelectVisitor(visitorNameEn);
 
-      // visitsPage.clickNext();
+        visitsPage.clickNextButton();
+
+        visitsPage.clickSubmitButton();
     }
 }

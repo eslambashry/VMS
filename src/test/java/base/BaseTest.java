@@ -28,7 +28,7 @@ public class BaseTest {
 
     @AfterMethod
     public void tearDown(ITestResult testResult) throws InterruptedException {
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     String testName = testResult.getName();
     File filePath = new File("target" + File.separator + "Screenshots"+ File.separator + testName  + ".png");
       takeScreenShot(filePath);

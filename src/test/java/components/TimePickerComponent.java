@@ -89,8 +89,21 @@ public class TimePickerComponent {
             }
             String direction = current < target ? "following-sibling" : "preceding-sibling";
             String neighborXpath = selectedXpath + "/" + direction + "::div[contains(@class,'time-item')][1]";
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(neighborXpath))).click();
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath(neighborXpath))).click();
+            } catch (TimeoutException e) {
+                // The widget can still be settling onto its own default (e.g. End Time defaults to
+                // Start Time + 1h) when "selected" was first read above - if it already landed on the
+                // target by now, there's no neighbor in the stale direction to click, which isn't a
+                // real failure. Only re-throw if it genuinely didn't reach the target.
+                int nowCurrent = parseTimeValue(driver.findElement(By.xpath(selectedXpath)).getText().trim());
+                if (nowCurrent == target) {
+                    return;
+                }
+                throw e;
+            }
         }
+        System.out.println("[TimePickerComponent] exhausted attempts selecting '" + targetText + "'. Modal HTML:\n" + dumpModalHtml());
         throw new IllegalStateException("Could not select '" + targetText + "' in time picker column");
     }
 
