@@ -46,6 +46,8 @@ public class CreateNormalVisitRequestTest extends BaseTest {
         System.out.println(loginPage.isLoggedIn());
 
 
+        System.out.println(loginPage.isLoggedIn());
+
         getDriver().navigate().to(TestConfig.CREATE_VISIT_URL);
 
         VisitsPage visitsPage = new VisitsPage(getDriver());
