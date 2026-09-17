@@ -45,13 +45,13 @@ public class CreateWithDynamicVisitorDataTest extends BaseTest {
 
         setDriver(DriverFactory.generateDriver(TestConfig.BROWSER));
         getDriver().get(TestConfig.AUTH_URL);
-
         LoginPage loginPage = new LoginPage(getDriver());
         loginPage.login(TestConfig.REGULAR_USERNAME, TestConfig.REGULAR_PASSWORD);
         getDriver().navigate().to(TestConfig.CREATE_VISIT_URL);
 
         VisitsPage visitsPage = new VisitsPage(getDriver());
         LocalDate visitDay = visitsPage.selectVisitDay(workingHoursList);
+        System.out.println(visitDay);
 
         // Kept to round hours (e.g. 10:00 -> 11:00) instead of a ":30" offset - simpler, valid
         // values for the time picker with no odd minute to land on.

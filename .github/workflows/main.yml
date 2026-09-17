@@ -13,6 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # src/test/java/config (TestConfig, EndPoint) is gitignored on purpose - it holds real
+      # credentials, so it was deliberately kept out of the repo. A fresh checkout on the runner
+      # genuinely doesn't have it, so it's restored here from a permanent copy kept outside the git
+      # workspace on this machine (E:\ci-config), never committed or uploaded anywhere.
+      - name: Restore gitignored config (TestConfig, EndPoint)
+        run: |
+          New-Item -ItemType Directory -Force -Path "src\test\java\config" | Out-Null
+          Copy-Item -Path "E:\ci-config\config\*" -Destination "src\test\java\config\" -Force
+
       - uses: actions/setup-java@v4
         with:
           java-version: "25"
