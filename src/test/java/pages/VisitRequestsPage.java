@@ -24,5 +24,9 @@ public class VisitRequestsPage extends BasePage {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("global-loader-container")));
         wait.until(ExpectedConditions.elementToBeClickable(APPROVE_ALL_BUTTON)).click();
         wait.until(ExpectedConditions.elementToBeClickable(CONFIRM_APPROVE_ALL_VISITORS_BUTTON)).click();
+        // No confirmation toast/modal exists for this action (confirmed by inspecting the DOM after
+        // a real approval) - waiting out the loader is the only UI-visible signal that the backend
+        // call triggered by the click above has settled, before the caller checks the result via API.
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("global-loader-container")));
     }
 }

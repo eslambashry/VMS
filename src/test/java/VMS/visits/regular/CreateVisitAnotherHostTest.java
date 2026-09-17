@@ -1,14 +1,20 @@
-package VMS;
+package VMS.visits.regular;
 
 import api.AuthClient;
 import api.LookupParser;
 import api.VisitMngtApiClient;
+import api.VisitRequestParser;
 import api.VisitorParser;
 import api.WorkingHoursParser;
 import base.BaseTest;
 import config.TestConfig;
 import factory.DriverFactory;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.VisitsPage;
@@ -20,27 +26,31 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateRegularVisitRequestTest extends BaseTest {
+@Epic("Visit Management")
+@Feature("Regular Visit")
+public class CreateVisitAnotherHostTest extends BaseTest {
 
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
 
-    @Story("Create Regular Request")
-    @Test(description = "Create Regular Visit")
-    public void createRegularVisitRequest() {
-        // A direct API login (separate from the browser session below) gets a real access token,
-        // so backend data needed for the test (like working hours) can be fetched directly -
-        // faster and far more reliable than intercepting browser network traffic for it.
-        String accessToken = AuthClient.login(TestConfig.USERNAME, TestConfig.PASSWORD);
+    @Story("Create Regular Request With Another Host")
+    @Severity(SeverityLevel.NORMAL)
+    @Test(description = "Create Regular Visit With Another Employee As Host", groups = {"regression", "visit", "regular"})
+    public void createRegularVisitRequestWithAnotherHost() {
+        String accessToken = AuthClient.login(TestConfig.REGULAR_USERNAME, TestConfig.REGULAR_PASSWORD);
         String workingHoursJson = VisitMngtApiClient.getWorkingHours(accessToken);
         List<WorkingHoursParser.WorkingHours> workingHoursList = WorkingHoursParser.parse(workingHoursJson);
         String visitZone = LookupParser.firstActiveNameEn(VisitMngtApiClient.getVisitZones(accessToken));
         String visitorNameEn = VisitorParser.firstCompleteVisitorNameEn(VisitMngtApiClient.getVisitors(accessToken));
+        // Picks an employee other than the logged-in user (see LookupParser.firstActiveNameEnExcluding)
+        // so this genuinely exercises "another host", not a same-person coincidence.
+        String hostEmployeeName = LookupParser.firstActiveNameEnExcluding(
+                VisitMngtApiClient.getEmployees(accessToken), TestConfig.REGULAR_USERNAME);
 
         setDriver(DriverFactory.generateDriver(TestConfig.BROWSER));
         getDriver().get(TestConfig.AUTH_URL);
 
         LoginPage loginPage = new LoginPage(getDriver());
-        loginPage.login(TestConfig.USERNAME, TestConfig.PASSWORD);
+        loginPage.login(TestConfig.REGULAR_USERNAME, TestConfig.REGULAR_PASSWORD);
         getDriver().navigate().to(TestConfig.CREATE_VISIT_URL);
 
         VisitsPage visitsPage = new VisitsPage(getDriver());
@@ -60,9 +70,12 @@ public class CreateRegularVisitRequestTest extends BaseTest {
         visitsPage.selectStartTime(startTime.format(TIME_FORMAT));
         visitsPage.selectEndTime(endTime.format(TIME_FORMAT));
         visitsPage.selectVisitType("Maintenance");
-        String Purpose = new UserUtils().generateRandomPurpose();
-        visitsPage.enterPurposeOfVisit(Purpose);
+        visitsPage.enterPurposeOfVisit(new UserUtils().generateRandomPurpose());
         visitsPage.selectVisitZone(visitZone);
+
+        visitsPage.switchToAnotherHost();
+
+        visitsPage.selectHostEmployee(hostEmployeeName);
 
         visitsPage.clickNextButton();
 
@@ -71,5 +84,18 @@ public class CreateRegularVisitRequestTest extends BaseTest {
         visitsPage.clickNextButton();
 
         visitsPage.clickSubmitButton();
+
+        Assert.assertTrue(
+                visitsPage.isVisitCreatedSuccessfully(),
+                "Visit should be created successfully"
+        );
+
+        // The success modal alone only proves "a visit was submitted" - it says nothing about which
+        // host ended up on it. This is the actual behavior this test exists to verify: the backend's
+        // record of the request really does show the selected employee as host, not "Me".
+        boolean hostSetCorrectly = VisitRequestParser.pendingRequestExistsForHost(
+                VisitMngtApiClient.getVisitRequests(accessToken), TestConfig.REGULAR_USERNAME, hostEmployeeName);
+        Assert.assertTrue(hostSetCorrectly,
+                "Created visit request should show " + hostEmployeeName + " as host, not the requester" + TestConfig.REGULAR_USERNAME);
     }
 }

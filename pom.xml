@@ -18,13 +18,14 @@
        <plugins>
            <plugin>
                <groupId>org.apache.maven.plugins</groupId>
+
                <artifactId>maven-surefire-plugin</artifactId>
                <version>3.6.0-M1</version>
                <configuration>
 <!--&lt;!&ndash;                   <parallel>methods</parallel>&ndash;&gt;  if you try to create request and approve on it with manager acc-->
                    <parallel>classes</parallel>
-                   <threadCount>2</threadCount>
-                   <argLine>-javaagent:"${org.aspectj:aspectjweaver:jar}"</argLine>
+                   <threadCount>1</threadCount>
+                   <argLine>-XX:TieredStopAtLevel=1 -javaagent:"${org.aspectj:aspectjweaver:jar}"</argLine>
                </configuration>
            </plugin>
            <plugin>

@@ -41,7 +41,7 @@ public class WorkingHoursParser {
                 .orElseThrow(() -> new IllegalStateException("No working hours entry for day " + apiDay));
     }
 
-    public static LocalDate nextWorkingDay(List<WorkingHours> workingHours, LocalDate from){
+private static LocalDate nextDayMatching(List<WorkingHours> workingHours, LocalDate from, boolean workingDayWanted){
         LocalDate candidate = from;
         for (int i = 0; i < 14; i++) {
             int apiDay = toApiDayOfWeek(candidate);
@@ -50,11 +50,23 @@ public class WorkingHoursParser {
                     .findFirst()
                     .map(WorkingHours::isWorkingDay)
                     .orElse(false);
-            if (working) {
+            if (working == workingDayWanted) {
                 return candidate;
             }
             candidate = candidate.plusDays(1);
         }
-        throw new IllegalStateException("No working day found within 14 days of " + from);
+        throw new IllegalStateException("No " + (workingDayWanted ? "working" : "non-working")
+                + " day found within 14 days of " + from);
+    }
+
+    public static LocalDate nextWorkingDay(List<WorkingHours> workingHours, LocalDate from){
+        return nextDayMatching(workingHours, from, true);
+    }
+
+
+    // Mirrors nextWorkingDay - used by negative tests that need a date the calendar should refuse
+    // to let the user pick (e.g. Saturday, which the API marks isWorkingDay=false).
+    public static LocalDate nextNonWorkingDay(List<WorkingHours> workingHours, LocalDate from){
+        return nextDayMatching(workingHours, from, false);
     }
 }

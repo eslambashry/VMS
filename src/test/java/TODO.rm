@@ -1,0 +1,9 @@
+mvn clean test -Dgroups=smoke
+mvn test -Dtest=CreateVisitAnotherHostTest
+الحته بتاعة اول صفحه بعد اللوجن
+
+اعمل run علي 3 threads و اشوف الtask manager ram
+
+CreateVisitMissingRequiredFieldTest data provider
+
+فعلت ال skip test عشان بلال

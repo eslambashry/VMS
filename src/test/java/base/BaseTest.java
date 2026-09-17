@@ -1,19 +1,13 @@
 package base;
 
-import io.qameta.allure.Allure;
-import org.aspectj.util.FileUtil;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
+import listeners.ScreenshotListener;
 import org.openqa.selenium.WebDriver;
+import org.testng.IHookCallBack;
+import org.testng.IHookable;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-public class BaseTest {
+public class BaseTest implements IHookable {
 
     // ! for run methods paralle
     protected ThreadLocal<WebDriver> driver = new ThreadLocal<>();
@@ -26,24 +20,24 @@ public class BaseTest {
         return driver.get();
     }
 
-    @AfterMethod
-    public void tearDown(ITestResult testResult) throws InterruptedException {
-    Thread.sleep(5000);
-    String testName = testResult.getName();
-    File filePath = new File("target" + File.separator + "Screenshots"+ File.separator + testName  + ".png");
-      takeScreenShot(filePath);
-           // driver.quit();
-        }
+    // Confirmed directly (not guessed): AllureTestNg closes out its Allure test-case context the
+    // moment the @Test method itself returns - before any ITestListener.onTestFailure callback or
+    // @AfterMethod runs. By then Allure.addAttachment() has nothing open to attach to and silently
+    // writes an orphaned attachment file that never shows up in the report. IHookable.run() wraps
+    // the test method invocation itself, so the screenshot can be taken right after
+    // runTestMethod() returns but still before TestNG hands control back to AllureTestNg's own
+    // afterInvocation - the only point where the attachment reliably lands.
+    @Override
+    public void run(IHookCallBack callBack, ITestResult testResult) {
+        callBack.runTestMethod(testResult);
+        ScreenshotListener.attachOnFailure(getDriver(), testResult);
+    }
 
-        public void takeScreenShot(File FilePath) {
-        File file = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
-            try {
-                FileUtil.copyFile(file, FilePath);
-                InputStream stream = new FileInputStream(file);
-                Allure.addAttachment("Screenshot", stream);
-            }
-            catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    @AfterMethod(alwaysRun = true)
+    public void tearDown() {
+        if (getDriver() != null) {
+//            getDriver().quit();
+//            driver.remove();
         }
+    }
 }

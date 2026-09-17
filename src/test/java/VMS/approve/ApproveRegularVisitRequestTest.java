@@ -1,4 +1,4 @@
-package VMS;
+package VMS.approve;
 
 import api.AuthClient;
 import api.VisitMngtApiClient;
@@ -6,11 +6,15 @@ import api.VisitRequestParser;
 import base.BaseTest;
 import config.TestConfig;
 import factory.DriverFactory;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
 import io.qameta.allure.Story;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.VisitRequestsPage;
 
+@Epic("Visit Management")
+@Feature("Regular Visit")
 public class ApproveRegularVisitRequestTest extends BaseTest {
 
     @Story("Approve Regular Request")

@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" />
+    <option name="activeSessionId" value="a9434466-d037-487a-92a9-4f667c3525c6" />
     <option name="openSessionIds">
       <list>
         <option value="288ace1c-69c7-4428-88f6-fd9ee61b3818" />
         <option value="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" />
+        <option value="95b8b9b8-1273-46b7-9815-fde607fafbb4" />
+        <option value="a9434466-d037-487a-92a9-4f667c3525c6" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
         <entry key="288ace1c-69c7-4428-88f6-fd9ee61b3818" value="/sessions/b5198cfc-1b61-4491-9fde-b69a5d2eb27e" />
+        <entry key="95b8b9b8-1273-46b7-9815-fde607fafbb4" value="/sessions/8d448c06-b0c4-41d8-b252-6c15140b75ae" />
+        <entry key="a9434466-d037-487a-92a9-4f667c3525c6" value="/sessions/bb98744e-5195-4a5d-9b97-3fe2bdff4fdd" />
         <entry key="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" value="/sessions/b5198cfc-1b61-4491-9fde-b69a5d2eb27e" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
         <entry key="288ace1c-69c7-4428-88f6-fd9ee61b3818" value="i want to link that page with our CreateRegularVis" />
+        <entry key="95b8b9b8-1273-46b7-9815-fde607fafbb4" value="I want you to work with me as a Senior Selenium Au" />
+        <entry key="a9434466-d037-487a-92a9-4f667c3525c6" value="13:58:45.764: [E:\C\VMS] git -c core.quotepath=fal" />
         <entry key="bc7dd73d-9aee-4fd6-94cd-a873052d2fd7" value="i want to link that page with our CreateRegularVis" />
       </map>
     </option>
